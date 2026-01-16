@@ -46,7 +46,38 @@ class ModelTrainer:
                 "k-Neighbour Regressor":KNeighborsRegressor(),
                 "Gradient Boost":GradientBoostingRegressor(),
             }
-            model_report:dict=evaluate_models(x1=x_train,y1=y_train,models=models,x2=x_test,y2=y_test)
+            params={
+                "Decision Tree":{
+                    'criterion':['squared_error','friedman_mse','absolute_error','poisson']
+                },
+                "Random forest":{
+                    'n_estimators':[8,16,32,64,128,256]
+                },
+                "Gradient Boost":{
+                    'learning_rate':[0.1,.01,.001],
+                    'subsample':[0.6,0.7,0.75,0.8,0.85,0.9],
+                    'n_estimators':[8,16,32,64,128,256]
+                },
+                "k-Neighbour Regressor":{
+                    'n_neighbors':[5,7,9,11]
+                },
+                "Xgboost":{
+                    'learning_rate':[0.1,.01,.001],
+                    'n_estimators':[8,16,32,64,128,256]
+                },
+                "Cat boost":{
+                    'depth':[6,8,10],
+                    'learning_rate':[0.1,0.01,0.05,0.5],
+                    'iterations':[100,300,500,1000]
+                },
+                "Ada boost":{
+                    'learning_rate':[0.1,0.01,0.05,0.5],
+                    'n_estimators':[8,16,32,64,128,256]
+                },
+                "Linear Regression":{}
+
+            }
+            model_report:dict=evaluate_models(x1=x_train,y1=y_train,models=models,x2=x_test,y2=y_test,param=params)
 
             best_model_score= max(sorted(model_report.values()))
             best_model_name=list(model_report.keys())[

@@ -5,6 +5,7 @@ import pandas as pd
 from src.exception import CustomException
 import dill
 from sklearn.metrics import r2_score
+from sklearn.model_selection import GridSearchCV
 
 def save_obj(file_path,obj):
     try:
@@ -16,12 +17,16 @@ def save_obj(file_path,obj):
     except Exception as e:
         raise CustomException(e,sys)
     
-def evaluate_models(x1,x2,y1,y2,models):
+def evaluate_models(x1,x2,y1,y2,models,param):
     try:
         report={}
 
         for i in range(len(list(models))):
             model= list(models.values())[i]
+            parameters=param[list(models.keys())[i]]
+            gs=GridSearchCV(model,parameters,cv=3)
+            gs.fit(x1,y1)
+            model.set_params(**gs.best_params_)
             model.fit(x1,y1)
             y_train_pred=model.predict(x1)
             y_test_pred=model.predict(x2)
@@ -30,5 +35,12 @@ def evaluate_models(x1,x2,y1,y2,models):
             report[list(models.keys())[i]]=test_score
 
         return report
+    except Exception as e:
+        raise CustomException(e,sys)
+    
+def load_obj(file_path):
+    try:
+        with open(file_path,'rb') as file_obj:
+            return dill.load(file_obj)
     except Exception as e:
         raise CustomException(e,sys)
